@@ -91,5 +91,6 @@
   },
   "postStartCommand": {
     "ef-migrate": "dotnet ef database update --project libs/data --startup-project apps/web-api"
-  }
+  },
+  "postAttachCommand": "scripts/welcome.sh"
 }
