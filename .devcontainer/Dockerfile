@@ -9,6 +9,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   jq \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# cloudflared — exposes local ports (web-api) over a public https URL so Expo Go on a phone can reach them
+RUN ARCH=$(dpkg --print-architecture) \
+  && curl -fsSL "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.deb" -o /tmp/cloudflared.deb \
+  && apt-get update && apt-get install -y --no-install-recommends /tmp/cloudflared.deb \
+  && rm /tmp/cloudflared.deb \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Persist bash history.
 RUN mkdir /commandhistory \
   && touch /commandhistory/.bash_history \

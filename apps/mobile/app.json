@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "SnapSort",
+    "slug": "snapsort-mobile",
+    "version": "0.0.1",
+    "scheme": "snapsort",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.snapsort.mobile"
+    },
+    "android": {
+      "package": "com.snapsort.mobile"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Let SnapSort pick photos to classify.",
+          "cameraPermission": "Let SnapSort take photos to classify."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

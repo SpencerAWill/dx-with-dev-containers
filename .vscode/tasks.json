@@ -109,6 +109,17 @@
       "problemMatcher": []
     },
     {
+      "label": "mobile: tunnel",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/mobile-tunnel.sh",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
       "label": "ef: rollback migration",
       "command": "dotnet",
       "type": "process",

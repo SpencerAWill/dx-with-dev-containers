@@ -39,7 +39,7 @@
     }
   },
   "remoteUser": "vscode",
-  "forwardPorts": [5173, 5000, 7071],
+  "forwardPorts": [5173, 5000, 7071, 8081, 19000, 19001, 19002],
   "portsAttributes": {
     "5173": {
       "label": "web-app (Vite Dev Server)",
@@ -52,6 +52,22 @@
     "7071": {
       "label": "Azure Functions (func start)",
       "onAutoForward": "notify"
+    },
+    "8081": {
+      "label": "mobile (Expo Metro)",
+      "onAutoForward": "notify"
+    },
+    "19000": {
+      "label": "mobile (Expo Dev)",
+      "onAutoForward": "silent"
+    },
+    "19001": {
+      "label": "mobile (Expo Dev Tools)",
+      "onAutoForward": "silent"
+    },
+    "19002": {
+      "label": "mobile (Expo Dev Tools UI)",
+      "onAutoForward": "silent"
     },
     "1433": {
       "label": "SQL Server (App Database)",
@@ -87,7 +103,8 @@
     "dotnet-tools": "dotnet tool restore",
     "dotnet-restore": "dotnet restore SnapSort.slnx",
     "ml-model": "mkdir -p apps/worker/Models && [ -f apps/worker/Models/mobilenetv2-7.onnx ] || curl -L -o apps/worker/Models/mobilenetv2-7.onnx https://github.com/onnx/models/raw/main/validated/vision/classification/mobilenet/model/mobilenetv2-7.onnx && [ -f apps/worker/Models/imagenet_classes.txt ] || curl -L -o apps/worker/Models/imagenet_classes.txt https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt",
-    "node": "cd apps/web-app && pnpm install"
+    "node": "cd apps/web-app && pnpm install",
+    "mobile": "cd apps/mobile && pnpm install"
   },
   "postStartCommand": {
     "ef-migrate": "dotnet ef database update --project libs/data --startup-project apps/web-api"
