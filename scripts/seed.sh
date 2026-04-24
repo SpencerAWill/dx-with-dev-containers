@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Run from repo root
+cd "$(dirname "$0")/.."
+
 API_URL="${1:-http://localhost:5000}"
 
 # Check if the API is running
@@ -20,21 +23,28 @@ IMAGES=(
   "https://picsum.photos/id/292/800/600|sports-car.jpg"
 )
 
-TMPDIR=$(mktemp -d)
-trap 'rm -rf "$TMPDIR"' EXIT
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
 
 for entry in "${IMAGES[@]}"; do
   url="${entry%%|*}"
   filename="${entry##*|}"
 
   echo -n "  Downloading $filename ... "
-  curl -sL -o "$TMPDIR/$filename" "$url"
+  if ! curl -sL -o "$tmpdir/$filename" "$url"; then
+    echo "failed (skipping)"
+    continue
+  fi
   echo "done"
 
   echo -n "  Uploading $filename ... "
-  result=$(curl -s -X POST "$API_URL/api/images" -F "file=@$TMPDIR/$filename;type=image/jpeg")
+  result=$(curl -s -X POST "$API_URL/api/images" -F "file=@$tmpdir/$filename;type=image/jpeg")
   id=$(echo "$result" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
-  echo "created $id"
+  if [ -n "$id" ]; then
+    echo "created $id"
+  else
+    echo "failed"
+  fi
 done
 
 echo ""

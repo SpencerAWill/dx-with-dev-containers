@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 echo ""
 echo -e "\033[1;36m=== SnapSort Dev Container ===\033[0m"
 echo ""
