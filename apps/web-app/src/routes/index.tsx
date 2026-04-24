@@ -9,6 +9,7 @@ interface Image {
   status: number;
   classificationLabel: string | null;
   confidence: number | null;
+  description: string | null;
   uploadedAt: string;
   classifiedAt: string | null;
 }
@@ -83,6 +84,9 @@ function Gallery() {
               <p className="confidence">
                 {(img.confidence * 100).toFixed(1)}% confidence
               </p>
+            )}
+            {img.description && (
+              <p className="description">{img.description}</p>
             )}
             <button
               className="delete-btn"

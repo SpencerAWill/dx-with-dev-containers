@@ -17,6 +17,7 @@ public record Image
     public ImageStatus Status { get; set; } = ImageStatus.Uploaded;
     public string? ClassificationLabel { get; set; }
     public double? Confidence { get; set; }
+    public string? Description { get; set; }
     public DateTime UploadedAt { get; init; } = DateTime.UtcNow;
     public DateTime? ClassifiedAt { get; set; }
 }

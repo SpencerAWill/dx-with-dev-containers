@@ -26,4 +26,15 @@ builder.Services.AddSingleton(new ImageClassifier(
     Path.Combine(modelsPath, "mobilenetv2-7.onnx"),
     Path.Combine(modelsPath, "imagenet_classes.txt")));
 
+var visionEndpoint = builder.Configuration["VisionModel:Endpoint"];
+var visionModel = builder.Configuration["VisionModel:Model"];
+if (!string.IsNullOrEmpty(visionEndpoint) && !string.IsNullOrEmpty(visionModel))
+{
+    builder.Services.AddSingleton(sp =>
+    {
+        var httpClient = new HttpClient { BaseAddress = new Uri(visionEndpoint) };
+        return new ImageDescriber(httpClient, visionModel);
+    });
+}
+
 builder.Build().Run();

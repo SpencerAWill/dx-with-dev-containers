@@ -12,7 +12,8 @@ public class ClassifyImageFunction(
     ImageClassifier classifier,
     BlobServiceClient blobService,
     AppDbContext db,
-    ILogger<ClassifyImageFunction> logger)
+    ILogger<ClassifyImageFunction> logger,
+    ImageDescriber? describer = null)
 {
     private record ImageUploadedMessage(Guid ImageId, string BlobUri);
 
@@ -55,6 +56,25 @@ public class ClassifyImageFunction(
 
             logger.LogInformation("Image {ImageId} classified as {Label} ({Confidence:P1})",
                 message.ImageId, result.Label, result.Confidence);
+
+            if (describer is not null)
+            {
+                try
+                {
+                    blobStream.Position = 0;
+                    var description = await describer.DescribeAsync(blobStream, image.ContentType);
+                    if (description is not null)
+                    {
+                        image.Description = description;
+                        logger.LogInformation("Image {ImageId} described: {Description}",
+                            message.ImageId, description);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Failed to describe image {ImageId}, skipping description", message.ImageId);
+                }
+            }
         }
         catch (Exception ex)
         {

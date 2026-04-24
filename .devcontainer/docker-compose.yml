@@ -17,6 +17,10 @@ services:
       ConnectionStrings__AzureStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
       AzureWebJobsStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
       FUNCTIONS_WORKER_RUNTIME: "dotnet-isolated"
+      VisionModel__Endpoint: "http://host.docker.internal:12434"
+      VisionModel__Model: "ai/gemma3:4B-Q4_K_M"
+    models:
+      - vision-model
     depends_on:
       app-mssql:
         condition: service_healthy
@@ -121,6 +125,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+# Docker Model Runner — vision model for image descriptions
+models:
+  vision-model:
+    model: ai/gemma3:4B-Q4_K_M
+    context_size: 4096
 
 volumes:
   bashhistory:

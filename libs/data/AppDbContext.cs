@@ -16,6 +16,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(e => e.ContentType).HasMaxLength(128);
             entity.Property(e => e.BlobUri).HasMaxLength(1024);
             entity.Property(e => e.ClassificationLabel).HasMaxLength(256);
+            entity.Property(e => e.Description).HasMaxLength(1024);
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(32);
         });
     }
