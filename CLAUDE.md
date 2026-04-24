@@ -9,7 +9,7 @@ SnapSort is a polyglot monorepo image classification app. It demonstrates dev co
 - `apps/` — deployable code units (web-app, web-api, worker)
 - `libs/` — shared libraries (data layer with EF Core models, DbContext, migrations)
 - `.devcontainer/` — all dev container configuration (Dockerfile, docker-compose.yml, devcontainer.json)
-- Solution file `SnapSort.sln` lives at repo root and references all .csproj files
+- Solution file `SnapSort.slnx` lives at repo root and references all .csproj files
 
 ## Tech Stack
 
@@ -23,7 +23,7 @@ SnapSort is a polyglot monorepo image classification app. It demonstrates dev co
 
 ```bash
 # Restore all .NET projects
-dotnet restore SnapSort.sln
+dotnet restore SnapSort.slnx
 
 # Run the API
 cd apps/web-api && dotnet run

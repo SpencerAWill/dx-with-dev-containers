@@ -82,5 +82,9 @@
       "onAutoForward": "silent"
     }
   },
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": {
+    "dotnet-tools": "dotnet tool restore",
+    "dotnet-restore": "dotnet restore SnapSort.slnx"
+  }
 }
