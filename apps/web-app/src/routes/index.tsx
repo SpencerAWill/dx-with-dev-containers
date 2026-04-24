@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Image {
   id: string;
@@ -32,10 +32,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Gallery() {
+  const queryClient = useQueryClient();
+
   const { data: images, isLoading } = useQuery<Image[]>({
     queryKey: ["images"],
     queryFn: () => fetch("/api/images").then((r) => r.json()),
     refetchInterval: 3000,
+  });
+
+  const deleteImage = useMutation({
+    mutationFn: (id: string) =>
+      fetch(`/api/images/${id}`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["images"] }),
   });
 
   if (isLoading) return <p className="loading">Loading images...</p>;
@@ -76,6 +84,13 @@ function Gallery() {
                 {(img.confidence * 100).toFixed(1)}% confidence
               </p>
             )}
+            <button
+              className="delete-btn"
+              onClick={() => deleteImage.mutate(img.id)}
+              disabled={deleteImage.isPending}
+            >
+              Remove
+            </button>
           </div>
         </div>
       ))}

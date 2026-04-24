@@ -94,4 +94,28 @@ public class ImageEndpointTests(ApiFixture fixture) : IClassFixture<ApiFixture>
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Delete_image_removes_from_database_and_blob()
+    {
+        using var content = new MultipartFormDataContent();
+        content.Add(new ByteArrayContent("deleteme"u8.ToArray()), "file", "delete.png");
+
+        var postResponse = await _client.PostAsync("/api/images", content);
+        var created = await postResponse.Content.ReadFromJsonAsync<Image>();
+
+        var deleteResponse = await _client.DeleteAsync($"/api/images/{created!.Id}");
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        var getResponse = await _client.GetAsync($"/api/images/{created.Id}");
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_returns_not_found_for_missing_id()
+    {
+        var response = await _client.DeleteAsync($"/api/images/{Guid.NewGuid()}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
 }

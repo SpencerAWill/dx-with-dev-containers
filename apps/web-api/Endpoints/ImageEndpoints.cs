@@ -77,5 +77,21 @@ public static class ImageEndpoints
             var download = await blobClient.DownloadStreamingAsync();
             return Results.Stream(download.Value.Content, image.ContentType, image.OriginalFileName);
         });
+
+        group.MapDelete("/{id:guid}", async (Guid id, AppDbContext db, BlobServiceClient blobService) =>
+        {
+            var image = await db.Images.FindAsync(id);
+            if (image is null)
+                return Results.NotFound();
+
+            var container = blobService.GetBlobContainerClient(ContainerName);
+            var blobName = new Uri(image.BlobUri).Segments[^1];
+            await container.GetBlobClient(blobName).DeleteIfExistsAsync();
+
+            db.Images.Remove(image);
+            await db.SaveChangesAsync();
+
+            return Results.NoContent();
+        });
     }
 }
