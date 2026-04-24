@@ -1,6 +1,17 @@
 <Solution>
+  <Folder Name="/apps/" />
+  <Folder Name="/apps/web-api/">
+    <Project Path="apps/web-api/WebApi.csproj" />
+  </Folder>
   <Folder Name="/libs/" />
   <Folder Name="/libs/data/">
     <Project Path="libs/data/Data.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/integration/">
+    <Project Path="tests/integration/Integration.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/unit/">
+    <Project Path="tests/unit/Unit.Tests.csproj" />
   </Folder>
 </Solution>
