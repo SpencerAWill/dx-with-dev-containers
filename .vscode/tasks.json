@@ -1,0 +1,108 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["build", "${workspaceFolder}/SnapSort.slnx"],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "web-api: run",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["run", "--project", "${workspaceFolder}/apps/web-api/WebApi.csproj"],
+      "isBackground": true,
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "ef: add migration",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "ef",
+        "migrations",
+        "add",
+        "${input:migrationName}",
+        "--project",
+        "${workspaceFolder}/libs/data",
+        "--startup-project",
+        "${workspaceFolder}/apps/web-api"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "ef: update database",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "--project",
+        "${workspaceFolder}/libs/data",
+        "--startup-project",
+        "${workspaceFolder}/apps/web-api"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "test: all",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["test", "${workspaceFolder}/SnapSort.slnx"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test: unit",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["test", "${workspaceFolder}/tests/unit/Unit.Tests.csproj"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test: integration",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["test", "${workspaceFolder}/tests/integration/Integration.Tests.csproj"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "ef: rollback migration",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "${input:targetMigration}",
+        "--project",
+        "${workspaceFolder}/libs/data",
+        "--startup-project",
+        "${workspaceFolder}/apps/web-api"
+      ],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "migrationName",
+      "description": "Migration name (e.g. AddClassificationIndex)",
+      "type": "promptString"
+    },
+    {
+      "id": "targetMigration",
+      "description": "Target migration to rollback to (e.g. InitialCreate, or 0 to revert all)",
+      "type": "promptString"
+    }
+  ]
+}
