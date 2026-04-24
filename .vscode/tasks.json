@@ -21,6 +21,13 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "web-app: dev",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/apps/web-app && pnpm dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
       "label": "ef: add migration",
       "command": "dotnet",
       "type": "process",
