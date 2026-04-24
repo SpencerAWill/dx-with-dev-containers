@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Data;
@@ -9,6 +11,7 @@ namespace WebApi.Endpoints;
 public static class ImageEndpoints
 {
     private const string ContainerName = "images";
+    private const string QueueName = "image-processing";
 
     public static void MapImageEndpoints(this WebApplication app)
     {
@@ -28,7 +31,7 @@ public static class ImageEndpoints
             return image is not null ? Results.Ok(image) : Results.NotFound();
         });
 
-        group.MapPost("/", async (IFormFile file, AppDbContext db, BlobServiceClient blobService) =>
+        group.MapPost("/", async (IFormFile file, AppDbContext db, BlobServiceClient blobService, ServiceBusClient serviceBus) =>
         {
             var container = blobService.GetBlobContainerClient(ContainerName);
             await container.CreateIfNotExistsAsync(PublicAccessType.None);
@@ -48,6 +51,14 @@ public static class ImageEndpoints
 
             db.Images.Add(image);
             await db.SaveChangesAsync();
+
+            await using var sender = serviceBus.CreateSender(QueueName);
+            var message = new ServiceBusMessage(JsonSerializer.Serialize(new
+            {
+                imageId = image.Id,
+                blobUri = image.BlobUri
+            }));
+            await sender.SendMessageAsync(message);
 
             return Results.Created($"/api/images/{image.Id}", image);
         })

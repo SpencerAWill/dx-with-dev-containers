@@ -1,3 +1,4 @@
+using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using Data;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddSingleton(_ =>
     new BlobServiceClient(builder.Configuration.GetConnectionString("AzureStorage")));
+
+builder.Services.AddSingleton(_ =>
+    new ServiceBusClient(builder.Configuration.GetConnectionString("ServiceBus")));
 
 var app = builder.Build();
 
