@@ -37,5 +37,5 @@ local.settings.json
 .DS_Store
 Thumbs.db
 
-# ONNX models (large binary files)
-*.onnx
+# ML model assets (downloaded on setup)
+apps/worker/Models/

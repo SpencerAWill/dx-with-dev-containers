@@ -85,6 +85,7 @@
   "workspaceFolder": "/workspace",
   "postCreateCommand": {
     "dotnet-tools": "dotnet tool restore",
-    "dotnet-restore": "dotnet restore SnapSort.slnx"
+    "dotnet-restore": "dotnet restore SnapSort.slnx",
+    "ml-model": "mkdir -p apps/worker/Models && [ -f apps/worker/Models/mobilenetv2-7.onnx ] || curl -L -o apps/worker/Models/mobilenetv2-7.onnx https://github.com/onnx/models/raw/main/validated/vision/classification/mobilenet/model/mobilenetv2-7.onnx && [ -f apps/worker/Models/imagenet_classes.txt ] || curl -L -o apps/worker/Models/imagenet_classes.txt https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"
   }
 }
