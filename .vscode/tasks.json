@@ -77,6 +77,19 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "worker: download model",
+      "type": "shell",
+      "command": "mkdir -p ${workspaceFolder}/apps/worker/Models && curl -L -o ${workspaceFolder}/apps/worker/Models/mobilenetv2-7.onnx https://github.com/onnx/models/raw/main/validated/vision/classification/mobilenet/model/mobilenetv2-7.onnx && curl -L -o ${workspaceFolder}/apps/worker/Models/imagenet_classes.txt https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt",
+      "problemMatcher": []
+    },
+    {
+      "label": "worker: run",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/apps/worker && func start",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
       "label": "ef: rollback migration",
       "command": "dotnet",
       "type": "process",

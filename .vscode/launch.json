@@ -6,6 +6,18 @@
       "type": "dotnet",
       "request": "launch",
       "projectPath": "${workspaceFolder}/apps/web-api/WebApi.csproj"
+    },
+    {
+      "name": "Worker",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/apps/worker/worker.csproj"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "API + Worker",
+      "configurations": ["Web API", "Worker"]
     }
   ]
 }
