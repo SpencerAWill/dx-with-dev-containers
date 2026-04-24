@@ -18,6 +18,9 @@ function RootLayout() {
           <Link to="/upload" className="nav-link" activeProps={{ className: "active" }}>
             Upload
           </Link>
+          <Link to="/status" className="nav-link" activeProps={{ className: "active" }}>
+            Status
+          </Link>
         </nav>
       </header>
       <main>

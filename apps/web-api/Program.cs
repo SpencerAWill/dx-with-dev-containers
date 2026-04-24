@@ -28,5 +28,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/health", () => Results.Ok("healthy"));
 app.MapImageEndpoints();
+app.MapStatusEndpoints();
 
 app.Run();

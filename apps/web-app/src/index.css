@@ -241,3 +241,87 @@ body {
   text-align: center;
   margin-top: 1rem;
 }
+
+/* Status */
+.status-page {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.status-page h2 {
+  margin-bottom: 1.5rem;
+}
+
+.status-banner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.status-banner.all-healthy {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.status-banner.has-issues {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.status-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.status-card.healthy {
+  border-left-color: #10b981;
+}
+
+.status-card.unhealthy {
+  border-left-color: #ef4444;
+}
+
+.status-indicator {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.status-card.healthy .status-indicator {
+  color: #10b981;
+}
+
+.status-card.unhealthy .status-indicator {
+  color: #ef4444;
+}
+
+.status-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.status-error-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+  word-break: break-word;
+}
+
+.status-error {
+  text-align: center;
+  padding: 2rem;
+  color: #ef4444;
+}
