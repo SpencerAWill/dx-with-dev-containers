@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/apps/" />
+  <Folder Name="/apps/">
+    <Project Path="apps/worker/worker.csproj" />
+  </Folder>
   <Folder Name="/apps/web-api/">
     <Project Path="apps/web-api/WebApi.csproj" />
   </Folder>
