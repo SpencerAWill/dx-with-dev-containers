@@ -2,6 +2,7 @@
   "name": "SnapSort Dev Container",
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
+  "initializeCommand": "bash ${localWorkspaceFolder}/.devcontainer/init.sh",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/devcontainers/features/dotnet:2": {},
@@ -67,34 +68,6 @@
     },
     "19002": {
       "label": "mobile (Expo Dev Tools UI)",
-      "onAutoForward": "silent"
-    },
-    "1433": {
-      "label": "SQL Server (App Database)",
-      "onAutoForward": "silent"
-    },
-    "1434": {
-      "label": "SQL Server (Service Bus)",
-      "onAutoForward": "silent"
-    },
-    "5672": {
-      "label": "Azure Service Bus (AMQP)",
-      "onAutoForward": "silent"
-    },
-    "5300": {
-      "label": "Azure Service Bus (Management)",
-      "onAutoForward": "silent"
-    },
-    "10000": {
-      "label": "Azurite Blob Service",
-      "onAutoForward": "silent"
-    },
-    "10001": {
-      "label": "Azurite Queue Service",
-      "onAutoForward": "silent"
-    },
-    "10002": {
-      "label": "Azurite Table Service",
       "onAutoForward": "silent"
     }
   },

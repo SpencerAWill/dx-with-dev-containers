@@ -1,6 +1,8 @@
 # Plan: Parallel-worktree dev container setup (bare-repo layout)
 
-> **Status:** Plan agreed; execution not yet started.
+> **Status:** Phase A implementation complete (with corrections noted at
+> the bottom); Phase B (host migration) and Phase C (verification)
+> pending.
 > Companion to `devcontainer-migration.md` (the reference doc from Claude
 > desktop). This file captures the agreed plan for *this* repo so it
 > survives container rebuilds and Claude Code session switches.
@@ -178,8 +180,18 @@ Runs **on the host shell only**.
 ### `.devcontainer/devcontainer.json`
 
 ```jsonc
-"initializeCommand": "bash ${localWorkspaceFolder}/.devcontainer/init.sh",
-"runArgs": ["--hostname", "${localWorkspaceFolderBasename}"]
+"initializeCommand": "bash ${localWorkspaceFolder}/.devcontainer/init.sh"
+```
+
+(`runArgs` is not supported with `dockerComposeFile`. Hostname goes
+in the compose service instead — see below.)
+
+### `.devcontainer/docker-compose.yml` (devcontainer service)
+
+```yaml
+services:
+  devcontainer:
+    hostname: ${WORKTREE_NAME:-snapsort}
 ```
 
 ### `.devcontainer/init.sh` (new, executable)
@@ -316,6 +328,35 @@ No changes to app code.
 - Re-adding env-driven host port mappings for sidecars (future).
 - `scripts/list-worktrees.sh` showing container/volume status per
   worktree (future polish).
+
+## Corrections discovered during implementation
+
+Two assumptions in the original plan were wrong (caught during a
+documentation cross-check):
+
+1. **Top-level `name: snapsort-${WORKTREE_NAME:-default}` is not
+   supported.** Compose's project name is an *input* to interpolation,
+   not an output — env-var substitution doesn't apply to that field.
+   Fix: dropped the line entirely. VS Code's dev containers extension
+   already generates a unique compose project name per workspace
+   folder path, so parallelism still works automatically.
+
+2. **A pinned `name:` does not protect a volume from `down -v`.** Only
+   `external: true` opts a volume out of compose's volume sweep. Fix:
+   `claude-code-config` is now `external: true` with name
+   `claude-code-config-shared`, and `init.sh` ensures it exists via
+   an idempotent `docker volume create` on each container start.
+
+3. **`runArgs` is not supported with `dockerComposeFile`.** Hostname
+   moved from `runArgs` to a `hostname:` field on the `devcontainer`
+   service in compose, interpolated from `WORKTREE_NAME` in `.env`.
+
+4. **`remove-worktree.sh` can't hardcode the project name.** Since VS
+   Code generates the project name (we no longer set it), the script
+   discovers it at runtime via container labels
+   (`devcontainer.local_folder` → `com.docker.compose.project`), with
+   a `--project <name>` override for cases where containers are
+   already gone.
 
 ## Resume notes for context switches
 

@@ -1,8 +1,18 @@
+# Per-worktree isolation comes from VS Code's dev containers extension,
+# which generates a unique compose project name per workspace folder
+# path. Two worktrees in different directories therefore get distinct
+# networks, containers, and volume namespaces automatically — no
+# explicit top-level `name:` is needed (and compose doesn't support
+# interpolation in that field anyway).
+
 services:
   devcontainer:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
+    # Hostname mirrors the worktree directory so shell prompts and
+    # `docker ps` are readable when multiple worktrees run in parallel.
+    hostname: ${WORKTREE_NAME:-snapsort}
     volumes:
       - ..:/workspace:cached
       - bashhistory:/commandhistory
@@ -35,8 +45,9 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     platform: linux/amd64
     restart: unless-stopped
-    ports:
-      - "1433:1433"
+    # No host port mapping: the app talks to "app-mssql:1433" over the
+    # internal compose network. Keeping the port off the host avoids
+    # collisions between parallel worktrees.
     volumes:
       - app-mssql-data:/var/opt/mssql
     environment:
@@ -66,8 +77,6 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     platform: linux/amd64
     restart: unless-stopped
-    ports:
-      - "1434:1433"
     volumes:
       - servicebus-mssql-data:/var/opt/mssql
     environment:
@@ -96,9 +105,6 @@ services:
   servicebus-emulator:
     image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
     restart: unless-stopped
-    ports:
-      - "5672:5672"
-      - "5300:5300"
     volumes:
       - ./servicebus-config.json:/ServiceBus_Emulator/ConfigFiles/Config.json
     environment:
@@ -114,10 +120,6 @@ services:
     image: mcr.microsoft.com/azure-storage/azurite:latest
     restart: unless-stopped
     command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck
-    ports:
-      - "10000:10000"
-      - "10001:10001"
-      - "10002:10002"
     volumes:
       - azurite-data:/data
     healthcheck:
@@ -134,7 +136,16 @@ models:
 
 volumes:
   bashhistory:
+  # Marked external so every worktree's container shares one Claude
+  # login + memory + settings, AND so it survives `docker compose
+  # down -v` (a pinned `name:` alone would not — only `external: true`
+  # opts a volume out of the down -v sweep). The volume is created
+  # idempotently by .devcontainer/init.sh on the host before compose
+  # comes up. The other named volumes get the per-project prefix from
+  # compose, isolating their data per worktree.
   claude-code-config:
+    external: true
+    name: claude-code-config-shared
   app-mssql-data:
   servicebus-mssql-data:
   azurite-data:
