@@ -9,7 +9,7 @@
     "web": "pnpm --filter web-app dev",
     "web:build": "pnpm --filter web-app build",
     "mobile": "pnpm --filter mobile start",
-    "mobile:tunnel": "pnpm --filter mobile tunnel",
+    "mobile:tunnel": "scripts/mobile-tunnel.sh",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint"
   }
