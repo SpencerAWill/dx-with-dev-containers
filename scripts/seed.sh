@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 API_URL="${1:-http://localhost:5000}"
 
 # Check if the API is running
-if ! curl -s -o /dev/null -w '' "$API_URL/health" 2>/dev/null; then
+if ! curl -sf -o /dev/null "$API_URL/health" 2>/dev/null; then
   echo "Error: API is not running at $API_URL"
   echo "Start the API first (web-api: run task or dotnet run)"
   exit 1
