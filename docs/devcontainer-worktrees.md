@@ -47,6 +47,9 @@ running bind mount confuses Docker).
 
 Prerequisites: clean working tree, no unpushed commits.
 
+Step-by-step, including verification, rollback and troubleshooting:
+[bare-layout-migration-runbook.md](bare-layout-migration-runbook.md).
+
 ## Quickstart
 
 After migration:

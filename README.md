@@ -84,6 +84,7 @@ scripts/        Host- and container-side helper scripts
 
 docs/           Longer-form documentation
   devcontainer-worktrees.md  Running parallel dev containers per worktree
+  bare-layout-migration-runbook.md  Host-side steps to convert to that layout
 
 .devcontainer/  Dev container configuration
   Dockerfile              Base image plus zsh, fzf, jq, cloudflared, Claude Code
