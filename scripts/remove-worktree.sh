@@ -11,6 +11,7 @@
 # Usage:
 #   scripts/remove-worktree.sh <branch>
 #   scripts/remove-worktree.sh <branch> --project <name>   # override discovery
+#   scripts/remove-worktree.sh <branch> --force            # discard local changes
 set -euo pipefail
 
 bold=$'\033[1m'
@@ -24,12 +25,14 @@ die() { echo "${red}error:${reset} $*" >&2; exit 1; }
 note() { echo "${cyan}==>${reset} $*"; }
 warn() { echo "${yellow}warning:${reset} $*" >&2; }
 
-[ $# -ge 1 ] || die "usage: $(basename "$0") <branch> [--project <name>]"
+[ $# -ge 1 ] || die "usage: $(basename "$0") <branch> [--project <name>] [--force]"
 branch="$1"; shift
 project_override=""
+force=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --project) project_override="${2:-}"; shift 2 || die "--project requires a name" ;;
+    --force) force=1; shift ;;
     *) die "unknown argument: $1" ;;
   esac
 done
@@ -59,6 +62,27 @@ case "$cwd/" in
   "$worktree"/*) die "refuse to remove worktree from inside it (cd elsewhere first)" ;;
 esac
 
+# Check removability BEFORE tearing anything down. `git worktree remove` refuses
+# on a worktree holding modified or untracked files, and hitting that after the
+# compose stack is already destroyed leaves a half-removed worktree with no
+# services behind it.
+#
+# There is no --dry-run on `git worktree remove`, so this asks the same question
+# with `status --porcelain`: it reports modified and untracked files and stays
+# quiet about ignored ones, which matches what git will object to.
+dirt="$(git -C "$worktree" status --porcelain 2>/dev/null || true)"
+if [ -n "$dirt" ]; then
+  if [ "$force" -eq 1 ]; then
+    warn "worktree has local changes; --force given, they will be discarded:"
+    printf '%s\n' "$dirt" | head -10 >&2
+  else
+    echo "${red}error:${reset} worktree has local changes, so it cannot be removed:" >&2
+    printf '%s\n' "$dirt" | head -10 >&2
+    echo "" >&2
+    die "commit or discard them, or rerun with ${bold}--force${reset} to discard"
+  fi
+fi
+
 # Resolve the compose project name. VS Code dev containers labels each
 # container with `devcontainer.local_folder=<host-path-to-worktree>` and
 # compose labels them with `com.docker.compose.project=<project-name>`.
@@ -84,7 +108,11 @@ else
 fi
 
 note "removing git worktree at $worktree"
-git -C "$parent" worktree remove "$worktree"
+if [ "$force" -eq 1 ]; then
+  git -C "$parent" worktree remove --force "$worktree"
+else
+  git -C "$parent" worktree remove "$worktree"
+fi
 
 if [ -n "$project" ]; then
   echo ""

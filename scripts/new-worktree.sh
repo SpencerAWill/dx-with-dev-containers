@@ -47,13 +47,27 @@ if git -C "$parent" worktree list --porcelain | grep -q "^branch refs/heads/$bra
   die "branch '$branch' is already checked out in another worktree"
 fi
 
+# --relative-paths writes "gitdir: ../.bare/worktrees/<name>" into the new
+# worktree instead of a host absolute path. The dev container mounts the parent
+# at /workspaces, where a host path like /Users/you/code/repo would not exist,
+# so an absolute one leaves git broken inside the container.
 if git -C "$parent" show-ref --verify --quiet "refs/heads/$branch"; then
   echo "${cyan}==>${reset} adding worktree for existing branch ${bold}$branch${reset} at $target"
-  git -C "$parent" worktree add "$target" "$branch"
+  git -C "$parent" worktree add --relative-paths "$target" "$branch"
+
+elif git -C "$parent" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+  # The branch exists on the remote but not locally. Without this case the
+  # script would fall through to the else and quietly create an unrelated new
+  # branch from HEAD, sharing only a name with the one on origin.
+  echo "${cyan}==>${reset} checking out remote branch ${bold}origin/$branch${reset} at $target"
+  git -C "$parent" worktree add --relative-paths --track \
+    -b "$branch" "$target" "origin/$branch"
+
 else
   base_ref="${base:-HEAD}"
   echo "${cyan}==>${reset} creating new branch ${bold}$branch${reset} from ${bold}$base_ref${reset} at $target"
-  git -C "$parent" worktree add -b "$branch" "$target" "$base_ref"
+  git -C "$parent" worktree add --relative-paths -b "$branch" "$target" "$base_ref"
+  echo "    (new branch — push with ${bold}git push -u origin $branch${reset})"
 fi
 
 echo ""
