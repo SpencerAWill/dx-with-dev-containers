@@ -22,7 +22,7 @@ SnapSort is a polyglot monorepo image classification app. It demonstrates dev co
 - **Web API**: ASP.NET Core Minimal APIs (.NET 10)
 - **Worker**: Azure Functions isolated worker (C#) + vision model (Gemma 3 via Docker Model Runner)
 - **Shared Data**: EF Core with SQL Server provider (`libs/data/`)
-- **Dev Container**: `mcr.microsoft.com/devcontainers/base:bookworm` with Node.js, .NET, and Azure Functions Core Tools as features
+- **Dev Container**: `mcr.microsoft.com/devcontainers/base:bookworm` with Node.js, .NET, Azure Functions Core Tools, and GitHub CLI as features
 
 ## Build & Run Commands
 
@@ -99,6 +99,17 @@ service name on the internal network (`app-mssql:1433`, `servicebus-emulator:567
 `azurite:10000`), and VS Code forwards only the dev ports (5173, 5000, 7071, 8081,
 19000-19002) out of the container. Do not add `ports:` mappings — the absence of
 published ports is what lets several worktrees run full stacks simultaneously.
+
+## GitHub CLI
+
+`gh` is installed via the `github-cli` dev container feature. Compose bind-mounts
+the host's `~/.config/gh` into the container, so `gh auth login` on the host
+carries into every worktree's container — no separate login per container, and
+the auth survives rebuilds because it lives on the host, not in the image.
+
+On macOS the token must be in `~/.config/gh/hosts.yml` for this to work; a
+Keychain-stored token does not cross the mount. `gh auth login --insecure-storage`
+on the host puts it there.
 
 ## Parallel Worktrees
 

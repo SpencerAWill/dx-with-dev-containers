@@ -17,6 +17,13 @@ services:
       - ..:/workspace:cached
       - bashhistory:/commandhistory
       - claude-code-config:/home/vscode/.claude
+      # Inherit the host's `gh auth login` rather than logging in again in
+      # every worktree's container. Carries a token only if the host stored
+      # it in ~/.config/gh/hosts.yml — on macOS that means the host ran
+      # `gh auth login --insecure-storage` once, since a Keychain-stored
+      # token does not cross the mount. Shared across worktrees on purpose:
+      # one login on the host is one login everywhere.
+      - ${HOME}/.config/gh:/home/vscode/.config/gh:cached
     environment:
       DEVCONTAINER: "true"
       NODE_OPTIONS: "--max-old-space-size=4096"

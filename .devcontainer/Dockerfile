@@ -51,3 +51,9 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # Install Claude Code
 RUN curl -fsSL https://claude.ai/install.sh | bash && \
   mkdir -p /home/vscode/.claude
+
+# Pre-create the mount point for the host's gh config. Docker invents missing
+# intermediate directories for a bind mount as root, which would leave
+# ~/.config root-owned and break any later tool that wants a directory under
+# it. Created here as vscode instead. The bind itself supplies the contents.
+RUN mkdir -p /home/vscode/.config/gh

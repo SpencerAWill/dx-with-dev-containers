@@ -43,19 +43,19 @@ graph LR
 
 ## Tech Stack
 
-| Component      | Technology                                                                    |
-| -------------- | ----------------------------------------------------------------------------- |
-| Web App        | React 19, Vite, TanStack Router, React Query, TypeScript                      |
-| Mobile App     | Expo SDK 54, Expo Router, React Native 0.81, TypeScript                       |
-| Web API        | ASP.NET Core Minimal APIs, .NET 10, Scalar API reference                      |
-| Worker         | Azure Functions (isolated worker), .NET 10                                    |
-| Vision Model   | Gemma 3 4B (`ai/gemma3:4B-Q4_K_M`) via Docker Model Runner                    |
-| Shared Library | Entity Framework Core, SQL Server provider                                    |
-| Node tooling   | pnpm workspace (one lockfile at the repo root)                                |
-| Dev Container  | Debian Bookworm base, Node.js + .NET + Azure Functions Core Tools as features |
-| Blob Storage   | Azurite emulator                                                              |
-| Message Bus    | Azure Service Bus Emulator                                                    |
-| Database       | SQL Server 2022 (two instances: app + Service Bus)                            |
+| Component      | Technology                                                                              |
+| -------------- | --------------------------------------------------------------------------------------- |
+| Web App        | React 19, Vite, TanStack Router, React Query, TypeScript                                |
+| Mobile App     | Expo SDK 54, Expo Router, React Native 0.81, TypeScript                                 |
+| Web API        | ASP.NET Core Minimal APIs, .NET 10, Scalar API reference                                |
+| Worker         | Azure Functions (isolated worker), .NET 10                                              |
+| Vision Model   | Gemma 3 4B (`ai/gemma3:4B-Q4_K_M`) via Docker Model Runner                              |
+| Shared Library | Entity Framework Core, SQL Server provider                                              |
+| Node tooling   | pnpm workspace (one lockfile at the repo root)                                          |
+| Dev Container  | Debian Bookworm base; Node.js, .NET, Azure Functions Core Tools, GitHub CLI as features |
+| Blob Storage   | Azurite emulator                                                                        |
+| Message Bus    | Azure Service Bus Emulator                                                              |
+| Database       | SQL Server 2022 (two instances: app + Service Bus)                                      |
 
 ## Project Structure
 
@@ -109,6 +109,10 @@ pinned in `.config/dotnet-tools.json`.
 - [VS Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - Docker Model Runner enabled in Docker Desktop — the Worker calls a local Gemma 3
   vision model through it, and will not start without `VisionModel__Endpoint` set
+- Optional: `gh auth login` on the **host**. The container bind-mounts
+  `~/.config/gh`, so the GitHub CLI inside it inherits that login. On macOS the
+  token has to be in `~/.config/gh/hosts.yml` rather than the Keychain, which
+  means logging in once with `gh auth login --insecure-storage`.
 
 ### Setup
 
@@ -119,12 +123,12 @@ pinned in `.config/dotnet-tools.json`.
 
 That is the whole setup. The lifecycle hooks do the rest:
 
-| Hook                | What it does                                                                                                               |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `initializeCommand` | `.devcontainer/init.sh` on the **host** — writes the worktree name for compose and creates the shared Claude config volume |
-| `postCreateCommand` | Restores .NET packages and `dotnet-ef`, installs the pnpm workspace                                                        |
-| `postStartCommand`  | Applies EF migrations (`dotnet ef database update`)                                                                        |
-| `postAttachCommand` | Prints the welcome banner                                                                                                  |
+| Hook                | What it does                                                                                                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `initializeCommand` | `.devcontainer/init.sh` on the **host** — writes the worktree name for compose, creates the shared Claude config volume, and ensures `~/.config/gh` exists for the bind mount |
+| `postCreateCommand` | Restores .NET packages and `dotnet-ef`, installs the pnpm workspace                                                                                                           |
+| `postStartCommand`  | Applies EF migrations (`dotnet ef database update`)                                                                                                                           |
+| `postAttachCommand` | Prints the welcome banner                                                                                                                                                     |
 
 ### Running
 
