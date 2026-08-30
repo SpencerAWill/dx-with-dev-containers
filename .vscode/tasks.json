@@ -98,7 +98,7 @@
     {
       "label": "worker: run",
       "type": "shell",
-      "command": "cd ${workspaceFolder}/apps/worker && func start",
+      "command": "cd ${workspaceFolder}/apps/worker && dotnet run",
       "isBackground": true,
       "problemMatcher": []
     },

@@ -51,7 +51,7 @@
       "onAutoForward": "notify"
     },
     "7071": {
-      "label": "Azure Functions (func start)",
+      "label": "Azure Functions (worker)",
       "onAutoForward": "notify"
     },
     "8081": {

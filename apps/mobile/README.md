@@ -14,15 +14,16 @@ Scan the QR code in the terminal with the Expo Go app (iOS App Store / Play Stor
 
 ## Networking from a dev container
 
-Two servers have to be reachable from the phone, and they are exposed separately:
+Two servers have to be reachable from the phone, so each gets its own
+cloudflared quick tunnel:
 
 ```mermaid
 graph LR
     Phone["Phone<br/>(Expo Go)"]
 
     subgraph Internet
-        ExpoTunnel["Expo tunnel<br/>(ngrok)"]
-        CfTunnel["cloudflared<br/>quick tunnel"]
+        CfMetro["cloudflared<br/>quick tunnel"]
+        CfApi["cloudflared<br/>quick tunnel"]
     end
 
     subgraph Dev Container
@@ -30,18 +31,27 @@ graph LR
         API["Web API<br/>:5000"]
     end
 
-    Phone -->|"loads JS bundle"| ExpoTunnel --> Metro
-    Phone -->|"EXPO_PUBLIC_API_URL"| CfTunnel --> API
+    Phone -->|"manifest + JS bundle"| CfMetro --> Metro
+    Phone -->|"EXPO_PUBLIC_API_URL"| CfApi --> API
 ```
 
-Expo's tunnel exposes Metro so Expo Go can download the bundle; cloudflared
-exposes the API so the running app can call it. A quick tunnel maps one hostname
-to one port, so one tunnel cannot cover both.
+A quick tunnel maps one hostname to one port, so one tunnel cannot cover both.
 
-`pnpm mobile:tunnel` (from the repo root) sets up both: it starts cloudflared
-against port 5000, writes the generated URL into `.env` as `EXPO_PUBLIC_API_URL`,
-then starts Expo in tunnel mode. On first run Expo installs `@expo/ngrok` on
-demand — it is not in the lockfile.
+`pnpm mobile:tunnel` (from the repo root) sets both up:
+
+1. Tunnels the API and writes the URL into `.env` as `EXPO_PUBLIC_API_URL`.
+2. Tunnels Metro and passes that URL to Expo as `EXPO_PACKAGER_PROXY_URL`, which
+   overrides the dev server URL Expo advertises — so the manifest and bundle are
+   fetched over the tunnel rather than from `localhost`.
+3. Starts Expo. Scan the QR code with Expo Go.
+
+Using cloudflared for Metro as well means Expo's own tunnel is not involved, so
+`@expo/ngrok` is never downloaded (it is not in the lockfile). To fall back to
+Expo's ngrok tunnel for Metro:
+
+```bash
+EXPO_TUNNEL=ngrok pnpm mobile:tunnel
+```
 
 ### On the same LAN
 

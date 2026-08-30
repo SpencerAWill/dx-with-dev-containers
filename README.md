@@ -43,19 +43,19 @@ graph LR
 
 ## Tech Stack
 
-| Component | Technology |
-|---|---|
-| Web App | React 19, Vite, TanStack Router, React Query, TypeScript |
-| Mobile App | Expo SDK 54, Expo Router, React Native 0.81, TypeScript |
-| Web API | ASP.NET Core Minimal APIs, .NET 10, Scalar API reference |
-| Worker | Azure Functions (isolated worker), .NET 10 |
-| Vision Model | Gemma 3 4B (`ai/gemma3:4B-Q4_K_M`) via Docker Model Runner |
-| Shared Library | Entity Framework Core, SQL Server provider |
-| Node tooling | pnpm workspace (one lockfile at the repo root) |
-| Dev Container | Debian Bookworm base, Node.js + .NET + Azure Functions Core Tools as features |
-| Blob Storage | Azurite emulator |
-| Message Bus | Azure Service Bus Emulator |
-| Database | SQL Server 2022 (two instances: app + Service Bus) |
+| Component      | Technology                                                                    |
+| -------------- | ----------------------------------------------------------------------------- |
+| Web App        | React 19, Vite, TanStack Router, React Query, TypeScript                      |
+| Mobile App     | Expo SDK 54, Expo Router, React Native 0.81, TypeScript                       |
+| Web API        | ASP.NET Core Minimal APIs, .NET 10, Scalar API reference                      |
+| Worker         | Azure Functions (isolated worker), .NET 10                                    |
+| Vision Model   | Gemma 3 4B (`ai/gemma3:4B-Q4_K_M`) via Docker Model Runner                    |
+| Shared Library | Entity Framework Core, SQL Server provider                                    |
+| Node tooling   | pnpm workspace (one lockfile at the repo root)                                |
+| Dev Container  | Debian Bookworm base, Node.js + .NET + Azure Functions Core Tools as features |
+| Blob Storage   | Azurite emulator                                                              |
+| Message Bus    | Azure Service Bus Emulator                                                    |
+| Database       | SQL Server 2022 (two instances: app + Service Bus)                            |
 
 ## Project Structure
 
@@ -119,12 +119,12 @@ pinned in `.config/dotnet-tools.json`.
 
 That is the whole setup. The lifecycle hooks do the rest:
 
-| Hook | What it does |
-|---|---|
+| Hook                | What it does                                                                                                               |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `initializeCommand` | `.devcontainer/init.sh` on the **host** — writes the worktree name for compose and creates the shared Claude config volume |
-| `postCreateCommand` | Restores .NET packages and `dotnet-ef`, installs the pnpm workspace |
-| `postStartCommand` | Applies EF migrations (`dotnet ef database update`) |
-| `postAttachCommand` | Prints the welcome banner |
+| `postCreateCommand` | Restores .NET packages and `dotnet-ef`, installs the pnpm workspace                                                        |
+| `postStartCommand`  | Applies EF migrations (`dotnet ef database update`)                                                                        |
+| `postAttachCommand` | Prints the welcome banner                                                                                                  |
 
 ### Running
 
@@ -135,7 +135,7 @@ Use VS Code tasks (Terminal > Run Task) or run manually:
 cd apps/web-api && dotnet run
 
 # Worker Function (terminal 2)
-cd apps/worker && func start
+cd apps/worker && dotnet run
 
 # Web App (terminal 3)
 pnpm web            # from the repo root
@@ -154,24 +154,24 @@ Compose publishes **nothing** to the host — services talk to each other over t
 compose network, which is what lets several worktrees run their own stacks side by
 side without collisions. VS Code forwards these out of the container:
 
-| Port | Service |
-|---|---|
-| 5173 | Vite dev server (web app) |
-| 5000 | ASP.NET Core API |
-| 7071 | Azure Functions (worker) |
-| 8081 | Metro bundler (mobile) |
-| 19000-19002 | Expo dev tools |
+| Port        | Service                   |
+| ----------- | ------------------------- |
+| 5173        | Vite dev server (web app) |
+| 5000        | ASP.NET Core API          |
+| 7071        | Azure Functions (worker)  |
+| 8081        | Metro bundler (mobile)    |
+| 19000-19002 | Expo dev tools            |
 
 Reachable from inside the dev container only, by service hostname:
 
-| Host:port | Service |
-|---|---|
-| `app-mssql:1433` | SQL Server (app database) |
-| `servicebus-mssql:1433` | SQL Server (Service Bus backing store) |
-| `servicebus-emulator:5672` | Service Bus (AMQP) |
-| `servicebus-emulator:5300` | Service Bus (management) |
-| `azurite:10000-10002` | Azurite Blob / Queue / Table |
-| `host.docker.internal:12434` | Docker Model Runner (vision model) |
+| Host:port                    | Service                                |
+| ---------------------------- | -------------------------------------- |
+| `app-mssql:1433`             | SQL Server (app database)              |
+| `servicebus-mssql:1433`      | SQL Server (Service Bus backing store) |
+| `servicebus-emulator:5672`   | Service Bus (AMQP)                     |
+| `servicebus-emulator:5300`   | Service Bus (management)               |
+| `azurite:10000-10002`        | Azurite Blob / Queue / Table           |
+| `host.docker.internal:12434` | Docker Model Runner (vision model)     |
 
 ### Testing
 

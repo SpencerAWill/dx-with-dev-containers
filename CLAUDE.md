@@ -34,7 +34,7 @@ dotnet restore SnapSort.slnx
 cd apps/web-api && dotnet run
 
 # Run the Worker
-cd apps/worker && func start
+cd apps/worker && dotnet run
 
 # Install Node dependencies for every workspace package
 pnpm install   # from the repo root — one pnpm workspace covers web-app and mobile
