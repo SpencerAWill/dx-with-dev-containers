@@ -99,6 +99,17 @@ All run as Docker containers via `.devcontainer/docker-compose.yml`:
 - `servicebus-emulator` — Azure Service Bus Emulator with `image-processing` queue
 - `azurite` — Azure Storage Emulator (well-known dev account key)
 
+## Workspace Mount
+
+Compose mounts the worktree's **parent** at `/workspaces`, and `workspaceFolder` is
+`/workspaces/${localWorkspaceFolderBasename}`. This is required by the bare-repo layout:
+a worktree's `.git` is a file pointing at `<parent>/.bare/worktrees/<name>`, which sits
+outside the worktree, so mounting only the worktree leaves git unable to resolve its own
+git directory. Do not change this back to `..:/workspace`.
+
+Worktrees must also be created with `--relative-paths` (the host scripts do this) — an
+absolute host path in `.git` does not exist inside the container.
+
 ## Networking
 
 Compose publishes **no** ports to the host. Services reach each other by compose

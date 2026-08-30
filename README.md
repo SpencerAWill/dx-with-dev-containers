@@ -132,12 +132,13 @@ commitlint enforces Conventional Commits — see `lint-staged.config.js`.
 
 That is the whole setup. The lifecycle hooks do the rest:
 
-| Hook                | What it does                                                                                                                                                                  |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `initializeCommand` | `.devcontainer/init.sh` on the **host** — writes the worktree name for compose, creates the shared Claude config volume, and ensures `~/.config/gh` exists for the bind mount |
-| `postCreateCommand` | Restores .NET packages and `dotnet-ef`, installs the pnpm workspace                                                                                                           |
-| `postStartCommand`  | Applies EF migrations (`dotnet ef database update`)                                                                                                                           |
-| `postAttachCommand` | Prints the welcome banner                                                                                                                                                     |
+| Hook                      | What it does                                                                                                                                                                  |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `initializeCommand`       | `.devcontainer/init.sh` on the **host** — writes the worktree name for compose, creates the shared Claude config volume, and ensures `~/.config/gh` exists for the bind mount |
+| `postCreateCommand` (git) | `.devcontainer/configure-git.sh` — trusts the bind-mounted repo and its `.bare`, and sets worktree/gc options                                                                 |
+| `postCreateCommand`       | Restores .NET packages and `dotnet-ef`, installs the pnpm workspace                                                                                                           |
+| `postStartCommand`        | Applies EF migrations (`dotnet ef database update`)                                                                                                                           |
+| `postAttachCommand`       | Prints the welcome banner                                                                                                                                                     |
 
 ### Running
 
