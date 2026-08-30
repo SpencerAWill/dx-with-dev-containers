@@ -20,7 +20,17 @@ services:
     # `docker ps` are readable when multiple worktrees run in parallel.
     hostname: ${WORKTREE_NAME:-snapsort}
     volumes:
-      - ..:/workspace:cached
+      # Mounts the PARENT of the worktree, not the worktree itself.
+      #
+      # In the bare-repo layout a worktree's .git is a file pointing at
+      # <parent>/.bare/worktrees/<name>, which sits outside the worktree. Mount
+      # only the worktree and that target is not in the container at all, so
+      # every git command fails with "not a git repository". Mounting the parent
+      # brings .bare — and the sibling worktrees — inside with it.
+      #
+      # workspaceFolder in devcontainer.json then selects the worktree via
+      # ${localWorkspaceFolderBasename}, so this works in both layouts.
+      - ../..:/workspaces:cached
       - bashhistory:/commandhistory
       - claude-code-config:/home/vscode/.claude
       # Inherit the host's `gh auth login` rather than logging in again in

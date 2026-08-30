@@ -32,3 +32,20 @@ docker volume create claude-code-config-shared >/dev/null 2>&1 || true
 # Docker from inventing it as root. Contents (hosts.yml) come from whatever
 # `gh auth login` has stored on the host.
 mkdir -p "$HOME/.config/gh"
+
+# The container mounts the PARENT of this directory at /workspaces, because a
+# worktree's .git points at <parent>/.bare and git cannot resolve that unless
+# the parent comes along (see docker-compose.yml).
+#
+# In the bare-repo layout that parent holds .bare plus the worktrees, and
+# mounting it is exactly right. Before that migration it is merely whatever
+# directory happens to contain this checkout, so its other contents are mounted
+# too — worth knowing, since anything running in the container can read them.
+parent_dir="$(cd "$workspace_dir/.." && pwd)"
+if [ ! -d "$parent_dir/.bare" ]; then
+  printf '\033[1;33mwarning:\033[0m not in the bare-repo worktree layout yet.\n' >&2
+  printf '  The dev container will mount %s at /workspaces,\n' "$parent_dir" >&2
+  printf '  so everything alongside this checkout is visible inside it.\n' >&2
+  printf '  Run scripts/migrate-to-bare-layout.sh to finish the migration;\n' >&2
+  printf '  see docs/devcontainer-worktrees.md.\n' >&2
+fi
