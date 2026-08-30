@@ -1,0 +1,31 @@
+<Project>
+
+  <!--
+    Settings every project in the solution shares. MSBuild imports this file
+    before each .csproj, so a project can still override any of it locally
+    (apps/worker adds its Functions-specific properties on top, for example).
+
+    One target framework in one place: bumping .NET here moves all five
+    projects together, instead of leaving one behind on the old TFM.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--
+    Write a packages.lock.json next to each project, recording the exact
+    resolved graph including transitive dependencies. Committing those files
+    makes a dependency change visible in review rather than implicit.
+
+    Note this is generation only, NOT `RestoreLockedMode`. Locked mode makes
+    restore *fail* when a lock file is out of date, which is the right setting
+    for a CI agent and the wrong one for a laptop mid-demo. Set
+    RestoreLockedMode=true where you want enforcement.
+  -->
+  <PropertyGroup>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+</Project>
