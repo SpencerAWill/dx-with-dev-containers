@@ -45,6 +45,13 @@ pnpm web        # or: pnpm --filter web-app dev
 # Run the mobile app (Expo Go on a phone, via cloudflared + Expo tunnel)
 pnpm mobile:tunnel   # or: pnpm mobile  for LAN-only
 
+# Formatting (Prettier for web/docs, dotnet format for C#)
+pnpm format
+pnpm format:check
+
+# Verify parallel-worktree isolation still holds
+scripts/check-worktree-isolation.sh
+
 # Tests
 dotnet test SnapSort.slnx          # all
 dotnet test tests/unit             # unit only
@@ -118,6 +125,38 @@ Each git worktree gets its own dev container and its own sidecar services.
 `WORKTREE_NAME` for compose; volumes are per-project except the deliberately shared,
 `external: true` Claude config volume. See `docs/devcontainer-worktrees.md` before
 changing anything in `.devcontainer/`.
+
+`scripts/check-worktree-isolation.sh` asserts the invariants that make this work
+(no published host ports, no `appPort`, per-project volumes, relative worktree paths).
+Run it after touching anything in `.devcontainer/` — the static pass works inside the
+container; the live pass needs the docker CLI, so run it on the host.
+
+## Version Pinning
+
+Everything that can drift is pinned in exactly one place:
+
+- `global.json` — the .NET SDK
+- `Directory.Build.props` — the target framework and language settings for all five projects
+- `Directory.Packages.props` — every NuGet version (Central Package Management). The `.csproj`
+  files carry `<PackageReference>` with no `Version` attribute, and a build fails if one
+  reintroduces it. Keep the EF Core entries in step with `.config/dotnet-tools.json`.
+- `.devcontainer/devcontainer-lock.json` — every dev container feature, by digest
+- `.devcontainer/docker-compose.yml` — every emulator image, by exact tag, never `:latest`
+
+`packages.lock.json` files are generated on restore and committed. Generation only —
+`RestoreLockedMode` is not on, so a version bump does not fail a local restore.
+
+## Formatting and Commits
+
+Prettier and ESLint are real dependencies, not editor extensions, and run on staged files
+through husky + lint-staged. C# is formatted by `dotnet format` against the same
+`.editorconfig` the IDE reads.
+
+One trap worth knowing: `dotnet format --include` silently matches nothing when given
+absolute paths — it reports "Formatted 0 of N files" and exits 0. lint-staged passes
+absolute paths, so `lint-staged.config.js` converts them to relative first.
+
+Commit messages are Conventional Commits, enforced by commitlint on `commit-msg`.
 
 ## Coding Conventions
 

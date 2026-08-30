@@ -79,6 +79,7 @@ scripts/        Host- and container-side helper scripts
   migrate-to-bare-layout.sh  One-time conversion to the bare-repo layout
   mobile-tunnel.sh      cloudflared tunnel + Expo tunnel for phone testing
   seed.sh / reset.sh    Demo data helpers
+  check-worktree-isolation.sh  Assert the invariants that keep worktrees independent
   welcome.sh            postAttach greeting
 
 docs/           Longer-form documentation
@@ -100,6 +101,14 @@ from inside an app.
 
 .NET projects are gathered by `SnapSort.slnx` at the repo root, and `dotnet-ef` is
 pinned in `.config/dotnet-tools.json`.
+
+Versions are pinned in one place each: `global.json` for the SDK,
+`Directory.Build.props` for the target framework, `Directory.Packages.props` for every
+NuGet version (Central Package Management), `devcontainer-lock.json` for dev container
+features, and exact image tags in `docker-compose.yml`.
+
+Prettier, ESLint and `dotnet format` run on staged files via husky + lint-staged, and
+commitlint enforces Conventional Commits — see `lint-staged.config.js`.
 
 ## Getting Started
 
@@ -197,6 +206,16 @@ sidecar services. Create one from the host shell with `scripts/new-worktree.sh`,
 remove it with `scripts/remove-worktree.sh`. See
 [docs/devcontainer-worktrees.md](docs/devcontainer-worktrees.md) for the layout, how
 the isolation works, and the gotchas.
+
+The isolation is checked, not assumed:
+
+```bash
+scripts/check-worktree-isolation.sh
+```
+
+It asserts no host ports are published, no `appPort` is used, only the intended volumes
+are shared, and git is configured for worktrees. The static pass runs anywhere; the live
+pass inspects running Docker state and so needs to run on the host.
 
 ## Key Takeaways (for the talk)
 
