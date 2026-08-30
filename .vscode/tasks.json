@@ -16,7 +16,11 @@
       "label": "web-api: run",
       "command": "dotnet",
       "type": "process",
-      "args": ["run", "--project", "${workspaceFolder}/apps/web-api/WebApi.csproj"],
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/apps/web-api/WebApi.csproj"
+      ],
       "isBackground": true,
       "problemMatcher": "$msCompile"
     },
@@ -80,7 +84,10 @@
       "label": "test: integration",
       "command": "dotnet",
       "type": "process",
-      "args": ["test", "${workspaceFolder}/tests/integration/Integration.Tests.csproj"],
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/integration/Integration.Tests.csproj"
+      ],
       "problemMatcher": "$msCompile"
     },
     {
@@ -127,6 +134,12 @@
         "--startup-project",
         "${workspaceFolder}/apps/web-api"
       ],
+      "problemMatcher": []
+    },
+    {
+      "label": "worktree: check isolation",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/check-worktree-isolation.sh",
       "problemMatcher": []
     }
   ],

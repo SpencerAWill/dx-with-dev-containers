@@ -80,6 +80,7 @@
   },
   "workspaceFolder": "/workspace",
   "postCreateCommand": {
+    "git-worktree-config": "git config --global --add safe.directory /workspace && git config --global worktree.useRelativePaths true && git config --global gc.auto 0",
     "dotnet-tools": "dotnet tool restore",
     "dotnet-restore": "dotnet restore SnapSort.slnx",
     "node": "pnpm install"
