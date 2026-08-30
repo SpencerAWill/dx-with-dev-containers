@@ -127,14 +127,45 @@ for shared in "${SHARED_VOLUMES[@]}"; do
   break
 done
 
-# 7. Git inside a container sees a repo whose worktree metadata was written by
-#    the host, at host paths. Relative paths are what make the same worktree
-#    usable from both sides.
-if grep -q 'worktree.useRelativePaths' "$DEVCONTAINER"; then
-  pass "git worktree.useRelativePaths is configured"
+# 7. The workspace mount has to reach the bare repo. A worktree's .git is a
+#    file pointing at <parent>/.bare/worktrees/<name>, which lives outside the
+#    worktree — mount only the worktree and git cannot resolve it at all.
+if grep -qE '^[[:space:]]*-[[:space:]]*\.\./\.\.:/workspaces' "$COMPOSE"; then
+  pass "workspace mount includes the bare-repo parent"
 else
-  fail "git worktree.useRelativePaths is configured" \
-    "without it, a worktree created on the host has .git paths the container cannot resolve"
+  fail "workspace mount includes the bare-repo parent" \
+    "expected '../..:/workspaces'; mounting only the worktree leaves .git dangling"
+fi
+
+# 8. ...and the folder actually opened has to be selected out of that mount.
+if grep -q 'localWorkspaceFolderBasename' "$DEVCONTAINER"; then
+  pass "workspaceFolder selects the worktree from the mounted parent"
+else
+  fail "workspaceFolder selects the worktree from the mounted parent" \
+    "expected /workspaces/\${localWorkspaceFolderBasename}"
+fi
+
+# 9. Worktree metadata is written on the host and read in the container, at
+#    different absolute paths. Relative paths are the only form valid on both
+#    sides, and it is the host-side scripts that do the writing.
+missing_relative=""
+for script in "$REPO_ROOT/scripts/new-worktree.sh" "$REPO_ROOT/scripts/migrate-to-bare-layout.sh"; do
+  if ! grep -q -- '--relative-paths' "$script"; then
+    missing_relative="$missing_relative $(basename "$script")"
+  fi
+done
+if [ -n "$missing_relative" ]; then
+  fail "host scripts create worktrees with relative paths" \
+    "missing --relative-paths in:$missing_relative"
+else
+  pass "host scripts create worktrees with relative paths"
+fi
+
+if grep -q 'worktree.useRelativePaths' "$REPO_ROOT/.devcontainer/configure-git.sh" 2>/dev/null; then
+  pass "container git is configured for relative worktree paths"
+else
+  fail "container git is configured for relative worktree paths" \
+    "expected worktree.useRelativePaths in .devcontainer/configure-git.sh"
 fi
 
 # ------------------------------------------------------------------ live pass
