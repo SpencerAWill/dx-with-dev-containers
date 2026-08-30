@@ -2,8 +2,14 @@ packages:
   - apps/web-app
   - apps/mobile
 
-# Dependencies allowed to run install scripts. pnpm blocks them by default;
-# without this, `pnpm install` prompts (and writes this file itself, in
-# whichever directory it was run from).
+# Dependencies allowed to run install scripts. pnpm blocks them by default and
+# writes a placeholder here for anything it finds — resolve those to true or
+# false rather than leaving them, since an unresolved entry fails the install.
+#
+#   esbuild        native binary, used by the Vite toolchain at build time
+#   unrs-resolver  native binary behind the ESLint import resolver; `expo lint`
+#                  shells out to `pnpm install`, which refuses to run until this
+#                  is answered, so mobile linting fails without it
 allowBuilds:
   esbuild: true
+  unrs-resolver: true
