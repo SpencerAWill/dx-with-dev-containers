@@ -1,0 +1,9 @@
+packages:
+  - apps/web-app
+  - apps/mobile
+
+# Dependencies allowed to run install scripts. pnpm blocks them by default;
+# without this, `pnpm install` prompts (and writes this file itself, in
+# whichever directory it was run from).
+allowBuilds:
+  esbuild: true

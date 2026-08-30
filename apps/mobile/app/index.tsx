@@ -12,10 +12,17 @@ import {
 } from "react-native";
 import { ImageStatus, imageDownloadUrl, listImages, type Image } from "@/api";
 
+// Self-assessed by the vision model, not a calibrated probability — band it.
+function certainty(confidence: number): string {
+  if (confidence >= 0.8) return "high";
+  if (confidence >= 0.5) return "medium";
+  return "low";
+}
+
 function statusLine(item: Image): string {
   if (item.status === ImageStatus.Classified && item.classificationLabel) {
-    const confidence = item.confidence ? ` (${Math.round(item.confidence * 100)}%)` : "";
-    return `${item.classificationLabel}${confidence}`;
+    const suffix = item.confidence != null ? ` (${certainty(item.confidence)} certainty)` : "";
+    return `${item.classificationLabel}${suffix}`;
   }
   if (item.status === ImageStatus.Failed) return "classification failed";
   if (item.status === ImageStatus.Processing) return "classifying…";

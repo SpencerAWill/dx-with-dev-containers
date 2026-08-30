@@ -9,11 +9,10 @@ using Worker.Services;
 namespace Worker.Functions;
 
 public class ClassifyImageFunction(
-    ImageClassifier classifier,
+    ImageAnalyzer analyzer,
     BlobServiceClient blobService,
     AppDbContext db,
-    ILogger<ClassifyImageFunction> logger,
-    ImageDescriber? describer = null)
+    ILogger<ClassifyImageFunction> logger)
 {
     private record ImageUploadedMessage(Guid ImageId, string BlobUri);
 
@@ -47,38 +46,20 @@ public class ClassifyImageFunction(
             await blobClient.DownloadToAsync(blobStream);
             blobStream.Position = 0;
 
-            var result = classifier.Classify(blobStream);
+            var analysis = await analyzer.AnalyzeAsync(blobStream, image.ContentType);
 
-            image.ClassificationLabel = result.Label;
-            image.Confidence = result.Confidence;
+            image.ClassificationLabel = analysis.Label;
+            image.Confidence = analysis.Confidence;
+            image.Description = analysis.Description;
             image.Status = ImageStatus.Classified;
             image.ClassifiedAt = DateTime.UtcNow;
 
-            logger.LogInformation("Image {ImageId} classified as {Label} ({Confidence:P1})",
-                message.ImageId, result.Label, result.Confidence);
-
-            if (describer is not null)
-            {
-                try
-                {
-                    blobStream.Position = 0;
-                    var description = await describer.DescribeAsync(blobStream, image.ContentType);
-                    if (description is not null)
-                    {
-                        image.Description = description;
-                        logger.LogInformation("Image {ImageId} described: {Description}",
-                            message.ImageId, description);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "Failed to describe image {ImageId}, skipping description", message.ImageId);
-                }
-            }
+            logger.LogInformation("Image {ImageId} classified as {Label} ({Confidence:P1}): {Description}",
+                message.ImageId, analysis.Label, analysis.Confidence, analysis.Description);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to classify image {ImageId}", message.ImageId);
+            logger.LogError(ex, "Failed to analyze image {ImageId}", message.ImageId);
             image.Status = ImageStatus.Failed;
         }
 

@@ -21,20 +21,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddSingleton(_ =>
     new BlobServiceClient(builder.Configuration["ConnectionStrings:AzureStorage"]));
 
-var modelsPath = Path.Combine(builder.Environment.ContentRootPath, "Models");
-builder.Services.AddSingleton(new ImageClassifier(
-    Path.Combine(modelsPath, "mobilenetv2-7.onnx"),
-    Path.Combine(modelsPath, "imagenet_classes.txt")));
-
 var visionEndpoint = builder.Configuration["VisionModel:Endpoint"];
 var visionModel = builder.Configuration["VisionModel:Model"];
-if (!string.IsNullOrEmpty(visionEndpoint) && !string.IsNullOrEmpty(visionModel))
+if (string.IsNullOrEmpty(visionEndpoint) || string.IsNullOrEmpty(visionModel))
 {
-    builder.Services.AddSingleton(sp =>
-    {
-        var httpClient = new HttpClient { BaseAddress = new Uri(visionEndpoint) };
-        return new ImageDescriber(httpClient, visionModel);
-    });
+    throw new InvalidOperationException(
+        "VisionModel:Endpoint and VisionModel:Model must be configured — the worker classifies " +
+        "and describes images with the vision model. See .devcontainer/docker-compose.yml.");
 }
+
+builder.Services.AddSingleton(_ =>
+{
+    var httpClient = new HttpClient
+    {
+        BaseAddress = new Uri(visionEndpoint),
+        // A 4B model on CPU can take a while on a large photo.
+        Timeout = TimeSpan.FromMinutes(2)
+    };
+    return new ImageAnalyzer(httpClient, visionModel);
+});
 
 builder.Build().Run();

@@ -28,6 +28,14 @@ const statusColors: Record<number, string> = {
   3: "#ef4444",
 };
 
+// The vision model reports its own certainty — a self-assessment, not a calibrated
+// probability — so show a band rather than a false-precision percentage.
+function certainty(confidence: number): string {
+  if (confidence >= 0.8) return "high certainty";
+  if (confidence >= 0.5) return "medium certainty";
+  return "low certainty";
+}
+
 export const Route = createFileRoute("/")({
   component: Gallery,
 });
@@ -81,9 +89,7 @@ function Gallery() {
               <p className="label">{img.classificationLabel}</p>
             )}
             {img.confidence != null && (
-              <p className="confidence">
-                {(img.confidence * 100).toFixed(1)}% confidence
-              </p>
+              <p className="confidence">{certainty(img.confidence)}</p>
             )}
             {img.description && (
               <p className="description">{img.description}</p>
