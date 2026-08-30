@@ -5,6 +5,12 @@
 # explicit top-level `name:` is needed (and compose doesn't support
 # interpolation in that field anyway).
 
+# Every emulator image is pinned to an exact version rather than a moving
+# tag. With `:latest`, two developers — or the same developer either side of
+# a rebuild — can run different emulator builds against identical source, and
+# the difference only shows up as a behaviour change nobody can reproduce.
+# Bump these deliberately, in a commit that says so.
+
 services:
   devcontainer:
     build:
@@ -49,7 +55,7 @@ services:
 
   # Application SQL Server — stores SnapSort image metadata and classification results
   app-mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2022-CU26-ubuntu-22.04
     platform: linux/amd64
     restart: unless-stopped
     # No host port mapping: the app talks to "app-mssql:1433" over the
@@ -81,7 +87,7 @@ services:
 
   # Dedicated SQL Server for the Service Bus Emulator — kept separate to avoid conflicts
   servicebus-mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2022-CU26-ubuntu-22.04
     platform: linux/amd64
     restart: unless-stopped
     volumes:
@@ -110,7 +116,7 @@ services:
 
   # Azure Service Bus Emulator — provides the image-processing queue
   servicebus-emulator:
-    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:2.0.1
     restart: unless-stopped
     volumes:
       - ./servicebus-config.json:/ServiceBus_Emulator/ConfigFiles/Config.json
@@ -124,7 +130,7 @@ services:
 
   # Azurite — Azure Storage emulator for blob, queue, and table storage
   azurite:
-    image: mcr.microsoft.com/azure-storage/azurite:latest
+    image: mcr.microsoft.com/azure-storage/azurite:3.37.0
     restart: unless-stopped
     command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck
     volumes:

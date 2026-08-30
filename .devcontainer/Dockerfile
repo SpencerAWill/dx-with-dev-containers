@@ -48,9 +48,11 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -x
 
-# Install Claude Code
-RUN curl -fsSL https://claude.ai/install.sh | bash && \
-  mkdir -p /home/vscode/.claude
+# Mount point for the shared Claude config volume. Claude Code itself is
+# installed by the anthropics/claude-code dev container feature, so its
+# version is pinned in devcontainer-lock.json like every other tool here —
+# rather than by an unpinned `curl | bash` baked into the image.
+RUN mkdir -p /home/vscode/.claude
 
 # Pre-create the mount point for the host's gh config. Docker invents missing
 # intermediate directories for a bind mount as root, which would leave
