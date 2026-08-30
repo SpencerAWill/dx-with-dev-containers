@@ -108,7 +108,7 @@ independently of any other worktree.
   `claude-code-config-shared`. The volume is created idempotently by
   `init.sh` (`docker volume create`) before compose comes up, and
   because it's external, `docker compose down -v` in any worktree
-  *won't* drop it — every worktree's container shares one Claude
+  _won't_ drop it — every worktree's container shares one Claude
   login, memory, and settings.
 - **Per-worktree window title.** `.vscode/settings.json` sets
   `window.title` using `${workspaceFolderBasename}`, so VS Code
@@ -123,12 +123,13 @@ cd ~/code/snapsort/main
 ```
 
 This:
+
 1. Discovers the actual compose project name from container labels
    (`devcontainer.local_folder=<worktree>` →
    `com.docker.compose.project=<name>`). Pass `--project <name>` to
    override discovery if the containers were already removed manually.
 2. Stops + removes the worktree's compose stack (`docker compose -p
-   <project> down -v --remove-orphans`).
+<project> down -v --remove-orphans`).
 3. Drops the per-project volumes (DB data, blob/queue/table data).
 4. Removes the worktree directory and the git worktree registration.
 5. Lists any remaining `<project>_*` volumes for manual review.

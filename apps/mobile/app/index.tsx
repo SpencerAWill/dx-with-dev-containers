@@ -21,7 +21,10 @@ function certainty(confidence: number): string {
 
 function statusLine(item: Image): string {
   if (item.status === ImageStatus.Classified && item.classificationLabel) {
-    const suffix = item.confidence != null ? ` (${certainty(item.confidence)} certainty)` : "";
+    const suffix =
+      item.confidence != null
+        ? ` (${certainty(item.confidence)} certainty)`
+        : "";
     return `${item.classificationLabel}${suffix}`;
   }
   if (item.status === ImageStatus.Failed) return "classification failed";
@@ -58,7 +61,8 @@ export default function HomeScreen() {
         <View style={styles.errorBox}>
           <Text style={styles.errorText}>{error}</Text>
           <Text style={styles.errorHint}>
-            Set EXPO_PUBLIC_API_URL in apps/mobile/.env to something the phone can reach.
+            Set EXPO_PUBLIC_API_URL in apps/mobile/.env to something the phone
+            can reach.
           </Text>
         </View>
       ) : null}
@@ -70,10 +74,15 @@ export default function HomeScreen() {
           data={images}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
-          refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={load} />
+          }
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <RNImage source={{ uri: imageDownloadUrl(item.id) }} style={styles.thumb} />
+              <RNImage
+                source={{ uri: imageDownloadUrl(item.id) }}
+                style={styles.thumb}
+              />
               <View style={styles.cardBody}>
                 <Text style={styles.fileName} numberOfLines={1}>
                   {item.originalFileName}
@@ -88,7 +97,9 @@ export default function HomeScreen() {
             </View>
           )}
           ListEmptyComponent={
-            !loading ? <Text style={styles.empty}>No images yet. Upload one!</Text> : null
+            !loading ? (
+              <Text style={styles.empty}>No images yet. Upload one!</Text>
+            ) : null
           }
         />
       )}
@@ -117,10 +128,20 @@ const styles = StyleSheet.create({
   thumb: { width: 96, alignSelf: "stretch", backgroundColor: "#334155" },
   cardBody: { flex: 1, padding: 12, justifyContent: "center" },
   fileName: { color: "#f1f5f9", fontWeight: "600", fontSize: 15 },
-  classification: { color: "#38bdf8", marginTop: 4, fontSize: 13, fontWeight: "500" },
+  classification: {
+    color: "#38bdf8",
+    marginTop: 4,
+    fontSize: 13,
+    fontWeight: "500",
+  },
   description: { color: "#cbd5e1", marginTop: 6, fontSize: 12, lineHeight: 16 },
   empty: { color: "#94a3b8", textAlign: "center", marginTop: 48 },
-  errorBox: { backgroundColor: "#7f1d1d", padding: 12, margin: 16, borderRadius: 8 },
+  errorBox: {
+    backgroundColor: "#7f1d1d",
+    padding: 12,
+    margin: 16,
+    borderRadius: 8,
+  },
   errorText: { color: "#fecaca", fontWeight: "600" },
   errorHint: { color: "#fecaca", marginTop: 4, fontSize: 12 },
   fab: {

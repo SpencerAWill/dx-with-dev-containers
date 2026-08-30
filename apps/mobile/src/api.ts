@@ -31,7 +31,11 @@ export async function listImages(): Promise<Image[]> {
   return res.json();
 }
 
-export async function uploadImage(uri: string, fileName: string, mimeType: string): Promise<Image> {
+export async function uploadImage(
+  uri: string,
+  fileName: string,
+  mimeType: string,
+): Promise<Image> {
   const form = new FormData();
   form.append("file", {
     uri,

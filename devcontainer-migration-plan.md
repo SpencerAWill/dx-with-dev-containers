@@ -4,7 +4,7 @@
 > the bottom); Phase B (host migration) and Phase C (verification)
 > pending.
 > Companion to `devcontainer-migration.md` (the reference doc from Claude
-> desktop). This file captures the agreed plan for *this* repo so it
+> desktop). This file captures the agreed plan for _this_ repo so it
 > survives container rebuilds and Claude Code session switches.
 
 ## Context
@@ -67,7 +67,7 @@ those hostnames — never `localhost:port`. So `Server=app-mssql` in
 worktree A and worktree B point to different containers, both happily
 listening on container-internal port 1433. Container-internal ports
 never touch the host and never collide. The collision risk is purely
-on the *host side*, from `ports:` mappings — which we drop.
+on the _host side_, from `ports:` mappings — which we drop.
 
 **Project naming.** Compose's directory-based default project naming
 has been inconsistent across versions (especially when the compose
@@ -212,7 +212,7 @@ Add `.devcontainer/.env`.
 
 ```jsonc
 {
-  "window.title": "${dirty}${activeEditorShort}${separator}${rootName} [${workspaceFolderBasename}]"
+  "window.title": "${dirty}${activeEditorShort}${separator}${rootName} [${workspaceFolderBasename}]",
 }
 ```
 
@@ -232,7 +232,7 @@ Three tasks wrapping the scripts:
 ### `scripts/welcome.sh`
 
 Reword the printed `http://localhost:5173` and `http://localhost:5000`
-lines: clarify these URLs are valid *inside* the container; on the
+lines: clarify these URLs are valid _inside_ the container; on the
 host, use VS Code's Ports panel.
 
 ### `scripts/new-worktree.sh` (new, executable)
@@ -335,7 +335,7 @@ Two assumptions in the original plan were wrong (caught during a
 documentation cross-check):
 
 1. **Top-level `name: snapsort-${WORKTREE_NAME:-default}` is not
-   supported.** Compose's project name is an *input* to interpolation,
+   supported.** Compose's project name is an _input_ to interpolation,
    not an output — env-var substitution doesn't apply to that field.
    Fix: dropped the line entirely. VS Code's dev containers extension
    already generates a unique compose project name per workspace

@@ -37,16 +37,27 @@ function Status() {
 
       {data && (
         <>
-          <div className={`status-banner ${data.healthy ? "all-healthy" : "has-issues"}`}>
-            {data.healthy ? "All services healthy" : "Some services have issues"}
+          <div
+            className={`status-banner ${data.healthy ? "all-healthy" : "has-issues"}`}
+          >
+            {data.healthy
+              ? "All services healthy"
+              : "Some services have issues"}
           </div>
           <div className="status-grid">
             {data.services.map((svc) => (
-              <div key={svc.name} className={`status-card ${svc.healthy ? "healthy" : "unhealthy"}`}>
-                <span className="status-indicator">{svc.healthy ? "\u2713" : "\u2717"}</span>
+              <div
+                key={svc.name}
+                className={`status-card ${svc.healthy ? "healthy" : "unhealthy"}`}
+              >
+                <span className="status-indicator">
+                  {svc.healthy ? "\u2713" : "\u2717"}
+                </span>
                 <div>
                   <p className="status-name">{svc.name}</p>
-                  {svc.error && <p className="status-error-text">{svc.error}</p>}
+                  {svc.error && (
+                    <p className="status-error-text">{svc.error}</p>
+                  )}
                 </div>
               </div>
             ))}

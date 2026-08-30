@@ -13,7 +13,10 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ title: "SnapSort" }} />
-        <Stack.Screen name="upload" options={{ title: "Upload", presentation: "modal" }} />
+        <Stack.Screen
+          name="upload"
+          options={{ title: "Upload", presentation: "modal" }}
+        />
       </Stack>
     </>
   );

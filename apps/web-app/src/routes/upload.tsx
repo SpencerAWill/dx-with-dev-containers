@@ -31,7 +31,9 @@ function Upload() {
             if (xhr.status >= 200 && xhr.status < 300) resolve();
             else reject(new Error(`Upload failed: ${xhr.statusText}`));
           });
-          xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+          xhr.addEventListener("error", () =>
+            reject(new Error("Upload failed")),
+          );
 
           const formData = new FormData();
           formData.append("file", file);

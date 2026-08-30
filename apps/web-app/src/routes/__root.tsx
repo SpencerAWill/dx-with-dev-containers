@@ -12,13 +12,25 @@ function RootLayout() {
           <Link to="/">SnapSort</Link>
         </h1>
         <nav>
-          <Link to="/" className="nav-link" activeProps={{ className: "active" }}>
+          <Link
+            to="/"
+            className="nav-link"
+            activeProps={{ className: "active" }}
+          >
             Gallery
           </Link>
-          <Link to="/upload" className="nav-link" activeProps={{ className: "active" }}>
+          <Link
+            to="/upload"
+            className="nav-link"
+            activeProps={{ className: "active" }}
+          >
             Upload
           </Link>
-          <Link to="/status" className="nav-link" activeProps={{ className: "active" }}>
+          <Link
+            to="/status"
+            className="nav-link"
+            activeProps={{ className: "active" }}
+          >
             Status
           </Link>
         </nav>

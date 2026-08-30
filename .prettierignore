@@ -1,0 +1,13 @@
+# Generated
+apps/web-app/src/routeTree.gen.ts
+apps/mobile/.expo/
+**/packages.lock.json
+pnpm-lock.yaml
+
+# Build output
+dist/
+bin/
+obj/
+
+# EF Core writes these; they are not ours to reformat
+libs/data/Migrations/

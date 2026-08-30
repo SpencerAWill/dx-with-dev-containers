@@ -26,7 +26,10 @@ export default function UploadScreen() {
 
   async function pick(source: "library" | "camera") {
     setError(null);
-    const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ["images"], quality: 0.8 };
+    const opts: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ["images"],
+      quality: 0.8,
+    };
     const result =
       source === "library"
         ? await ImagePicker.launchImageLibraryAsync(opts)
@@ -42,7 +45,10 @@ export default function UploadScreen() {
       format: ImageManipulator.SaveFormat.JPEG,
     });
 
-    const baseName = (asset.fileName ?? `photo-${Date.now()}`).replace(/\.[^.]+$/, "");
+    const baseName = (asset.fileName ?? `photo-${Date.now()}`).replace(
+      /\.[^.]+$/,
+      "",
+    );
     setPicked({
       uri: jpeg.uri,
       fileName: `${baseName}.jpg`,
@@ -88,7 +94,11 @@ export default function UploadScreen() {
         disabled={!picked || uploading}
         onPress={submit}
       >
-        {uploading ? <ActivityIndicator color="white" /> : <Text style={styles.primaryText}>Upload</Text>}
+        {uploading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.primaryText}>Upload</Text>
+        )}
       </Pressable>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -98,7 +108,12 @@ export default function UploadScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f172a", padding: 16, gap: 16 },
-  preview: { width: "100%", aspectRatio: 1, borderRadius: 12, backgroundColor: "#1e293b" },
+  preview: {
+    width: "100%",
+    aspectRatio: 1,
+    borderRadius: 12,
+    backgroundColor: "#1e293b",
+  },
   placeholder: {
     width: "100%",
     aspectRatio: 1,
