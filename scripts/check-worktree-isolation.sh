@@ -46,11 +46,11 @@ fail() {
   [ $# -gt 1 ] && printf '      %s\n' "$2"
 }
 skip() { printf '  \033[33m–\033[0m %s\n' "$1"; }
-head() { printf '\n\033[1m%s\033[0m\n' "$1"; }
+section() { printf '\n\033[1m%s\033[0m\n' "$1"; }
 
 # ---------------------------------------------------------------- static pass
 
-head "Static — configuration invariants"
+section "Static — configuration invariants"
 
 # 1. Publishing a host port pins it for the whole machine, so the second
 #    worktree to start would collide. Everything must reach the host through
@@ -171,12 +171,12 @@ fi
 # ------------------------------------------------------------------ live pass
 
 if [ "${1:-}" = "--static" ]; then
-  head "Live — skipped (--static)"
+  section "Live — skipped (--static)"
 elif ! command -v docker >/dev/null 2>&1; then
-  head "Live — skipped"
+  section "Live — skipped"
   skip "docker CLI not available (expected inside the dev container; run this on the host)"
 else
-  head "Live — running Docker state"
+  section "Live — running Docker state"
 
   # Compose labels every container it creates with its project name. Two
   # worktrees running at once must show up as two distinct projects.

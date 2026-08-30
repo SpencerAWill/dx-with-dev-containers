@@ -48,9 +48,15 @@ cd "$top"
 
 # The new worktree is created with relative paths so the same metadata resolves
 # on the host and at /workspaces/<name> in the container. Added in git 2.48.
+#
+# Compared field by field rather than with `sort -V`, which is a GNU extension
+# this script cannot count on — it runs on the host, and macOS ships BSD sort.
 git_version="$(git --version | awk '{print $3}')"
-if [ "$(printf '%s\n2.48.0\n' "$git_version" | sort -V | head -1)" != "2.48.0" ]; then
-  die "git $git_version is too old — 2.48+ is needed for worktree --relative-paths,
+git_major="${git_version%%.*}"
+git_rest="${git_version#*.}"
+git_minor="${git_rest%%.*}"
+if [ "$git_major" -lt 2 ] || { [ "$git_major" -eq 2 ] && [ "$git_minor" -lt 48 ]; }; then
+  die "git $git_version is too old — 2.48+ is needed for 'worktree add --relative-paths',
        without which the container cannot resolve the worktree's git directory"
 fi
 
