@@ -129,6 +129,32 @@ On macOS the token must be in `~/.config/gh/hosts.yml` for this to work; a
 Keychain-stored token does not cross the mount. `gh auth login --insecure-storage`
 on the host puts it there.
 
+## Git Identity
+
+The container does NOT rely on VS Code's `dev.containers.copyGitConfig` to get a
+commit author. That is a per-machine editor setting, and even when it is on it
+copies `~/.gitconfig` verbatim — so an identity kept in XDG
+(`~/.config/git/config`) or reached through an `includeIf` never arrives. Either
+way the symptom is the same: `git commit` fails inside the container with
+"unable to auto-detect email address".
+
+Instead `.devcontainer/init.sh` asks the host's git for the _resolved_
+`user.name` and `user.email` (from the worktree, so repo-conditional identities
+work), writes them to `.devcontainer/.env`, and compose passes them as
+`GIT_USER_NAME` / `GIT_USER_EMAIL`. `.devcontainer/configure-git.sh` applies them
+to the container's global config on `postCreateCommand`.
+
+Consequences worth knowing:
+
+- The host is the source of truth. Change your identity there and rebuild; do
+  not `git config --global` inside the container, since that dies with it.
+- Do not set `user.name`/`user.email` in the repo's local config either. In the
+  bare layout that is `.bare/config`, which every worktree shares, and local
+  overrides global — so it would silently shadow this mechanism everywhere.
+- Both scripts warn loudly when the host has no identity configured, rather than
+  letting the first commit fail with git's own message, which misleadingly
+  points at `--global` as the fix.
+
 ## Parallel Worktrees
 
 Each git worktree gets its own dev container and its own sidecar services.

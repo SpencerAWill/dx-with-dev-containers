@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Runs on the HOST as `initializeCommand`, before `docker compose up`.
-# Two jobs:
-#   1. Write WORKTREE_NAME to .devcontainer/.env so compose can
-#      interpolate it for the dev container's hostname (readable shell
-#      prompts and `docker ps` per worktree).
+# Three jobs:
+#   1. Write .devcontainer/.env for compose to interpolate: WORKTREE_NAME for
+#      the dev container's hostname (readable shell prompts and `docker ps`
+#      per worktree), and the host's git identity so commits inside the
+#      container are attributed correctly.
 #   2. Ensure the cross-project Claude config volume exists. It's
 #      declared `external: true` in compose so it survives
 #      `docker compose down -v` — but external volumes must be
@@ -20,8 +21,30 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 workspace_dir="$(cd "$script_dir/.." && pwd)"
 worktree_name="$(basename "$workspace_dir")"
 
+# Git identity for the container. VS Code's `dev.containers.copyGitConfig` is
+# a per-machine setting that may simply be off, and even when it is on it copies
+# ~/.gitconfig literally — so an identity kept in XDG (~/.config/git/config) or
+# reached through an includeIf never arrives. Asking git for the resolved values
+# covers all three cases, and asking from inside the worktree picks up any
+# repo-conditional identity the host has configured.
+git_user_name=""
+git_user_email=""
+if command -v git >/dev/null 2>&1; then
+  git_user_name="$(git -C "$workspace_dir" config --get user.name || true)"
+  git_user_email="$(git -C "$workspace_dir" config --get user.email || true)"
+fi
+
+if [ -z "$git_user_email" ] || [ -z "$git_user_name" ]; then
+  printf '\033[1;33mwarning:\033[0m the host has no git user.name/user.email.\n' >&2
+  printf '  Commits inside the dev container will fail until you set them:\n' >&2
+  printf '    git config --global user.name "Your Name"\n' >&2
+  printf '    git config --global user.email "you@example.com"\n' >&2
+fi
+
 cat > "$script_dir/.env" <<EOF
 WORKTREE_NAME=$worktree_name
+GIT_USER_NAME=$git_user_name
+GIT_USER_EMAIL=$git_user_email
 EOF
 
 # Idempotent: docker volume create is a no-op if the volume exists.

@@ -42,3 +42,25 @@ git config --global worktree.useRelativePaths true
 # Several containers share one .bare in this layout. Background gc firing in one
 # of them would be repacking a repository the others are actively using.
 git config --global gc.auto 0
+
+# Identity. Arrives as environment variables on the compose service; init.sh
+# reads the resolved values from the host's git and writes them to
+# .devcontainer/.env. Applying them here rather than relying on VS Code's
+# `dev.containers.copyGitConfig` means the container gets an author regardless
+# of how any individual's editor is configured — and regardless of whether the
+# host keeps its identity in ~/.gitconfig, in XDG, or behind an includeIf.
+if [ -n "${GIT_USER_NAME:-}" ]; then
+  git config --global user.name "$GIT_USER_NAME"
+fi
+if [ -n "${GIT_USER_EMAIL:-}" ]; then
+  git config --global user.email "$GIT_USER_EMAIL"
+fi
+
+# Worth failing loudly here rather than at the first commit: git's own error
+# ("unable to auto-detect email address") points at --global as the fix, which
+# is the wrong layer — the value belongs on the host, so it survives a rebuild.
+if [ -z "$(git config --get user.email || true)" ]; then
+  printf '\033[1;33mwarning:\033[0m git has no user.email; commits will fail.\n' >&2
+  printf '  Set it on the HOST and rebuild the container:\n' >&2
+  printf '    git config --global user.email "you@example.com"\n' >&2
+fi

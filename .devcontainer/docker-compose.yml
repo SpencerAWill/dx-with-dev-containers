@@ -45,6 +45,14 @@ services:
       NODE_OPTIONS: "--max-old-space-size=4096"
       CLAUDE_CONFIG_DIR: /home/vscode/.claude
       POWERLEVEL9K_DISABLE_GITSTATUS: "true"
+      # The host's git identity, resolved by init.sh and written to
+      # .devcontainer/.env; configure-git.sh applies it inside the container.
+      # Deliberately not left to VS Code's `dev.containers.copyGitConfig` — that
+      # is a per-machine editor setting, so whether commits get an author would
+      # otherwise depend on how each person's editor happens to be configured.
+      # Empty if the host has no identity set; configure-git.sh warns then.
+      GIT_USER_NAME: ${GIT_USER_NAME:-}
+      GIT_USER_EMAIL: ${GIT_USER_EMAIL:-}
       ConnectionStrings__AppDb: "Server=app-mssql;Database=SnapSort;User Id=sa;Password=App_Passw0rd!;TrustServerCertificate=true"
       ConnectionStrings__ServiceBus: "Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
       ConnectionStrings__AzureStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
