@@ -60,6 +60,14 @@ services:
       FUNCTIONS_WORKER_RUNTIME: "dotnet-isolated"
       VisionModel__Endpoint: "http://host.docker.internal:12434"
       VisionModel__Model: "ai/gemma3:4B-Q4_K_M"
+      # Keep `expo start` from preparing the React Native DevTools shell. It is a
+      # 115 MB Electron app, downloaded per container and linked against the whole
+      # GTK/X11/NSS stack, none of which is in this image — so every mobile start
+      # ended in "An unknown error occurred while installing React Native DevTools"
+      # (libglib-2.0.so.0). Nothing is lost: a desktop window has no display to
+      # open on in here. Read by a one-line patch to @expo/cli; see
+      # patches/@expo__cli@57.0.22.patch and pnpm-workspace.yaml.
+      EXPO_NO_DEVTOOLS_SHELL: "1"
     models:
       - vision-model
     depends_on:

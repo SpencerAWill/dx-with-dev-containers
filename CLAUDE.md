@@ -179,6 +179,9 @@ Everything that can drift is pinned in exactly one place:
   reintroduces it. Keep the EF Core entries in step with `.config/dotnet-tools.json`.
 - `.devcontainer/devcontainer-lock.json` — every dev container feature, by digest
 - `.devcontainer/docker-compose.yml` — every emulator image, by exact tag, never `:latest`
+- `patches/` — pnpm patches, registered in `pnpm-workspace.yaml` under
+  `patchedDependencies` and keyed to an exact version so a dependency bump fails the
+  install instead of silently dropping the patch.
 
 `packages.lock.json` files are generated on restore and committed. Generation only —
 `RestoreLockedMode` is not on, so a version bump does not fail a local restore.
@@ -204,5 +207,12 @@ Commit messages are Conventional Commits, enforced by commitlint on `commit-msg`
 - Web app uses TanStack Router file-based routing in `src/routes/`
 - Mobile app uses Expo Router file-based routing in `app/`; shared API client in `src/api.ts`
 - Mobile Metro config must not set `disableHierarchicalLookup` — it breaks pnpm resolution (see the comment in `apps/mobile/metro.config.js`)
+- The React Native DevTools shell is off in the container: `EXPO_NO_DEVTOOLS_SHELL=1`
+  in `docker-compose.yml`, read by a one-line patch to `@expo/cli`. Without it every
+  `expo start` errors on `libglib-2.0.so.0` — the shell is a 115 MB Electron app and
+  the image has none of the GTK/X11/NSS stack it links against. Expo's own opt-out,
+  `EXPO_UNSTABLE_HEADLESS`, is not usable here: it also disables the interactive TUI,
+  and the QR code lives there. Pressing `j` is unaffected — it fell through to the
+  browser launcher before this change too.
 - pnpm for all Node.js package management; one workspace at the repo root (`pnpm-workspace.yaml`), one lockfile, `pnpm --filter <pkg>` to target an app
 - Prettier for formatting, ESLint for linting (web app)

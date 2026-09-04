@@ -1,0 +1,19 @@
+diff --git a/build/src/start/server/metro/debugging/createDebugMiddleware.js b/build/src/start/server/metro/debugging/createDebugMiddleware.js
+index 963886d..68c2220 100644
+--- a/build/src/start/server/metro/debugging/createDebugMiddleware.js
++++ b/build/src/start/server/metro/debugging/createDebugMiddleware.js
+@@ -46,7 +46,13 @@ function createDebugMiddleware({ serverBaseUrl, reporter }) {
+             // The standalone fusebox shell (@react-native/debugger-shell) starts installing almost
+             // immediately in the background when the dev middleware is created, which we don't
+             // always want to happen
+-            enableStandaloneFuseboxShell: !(0, _env.envIsHeadless)()
++            //
++            // PATCHED (SnapSort): also honour EXPO_NO_DEVTOOLS_SHELL. The shell is a 115 MB
++            // Electron app, and this repo's dev container has none of the GTK/X11/NSS libraries
++            // it links against, so preparing it only ever ends in an ERROR at startup. The
++            // supported opt-out, EXPO_UNSTABLE_HEADLESS, also turns off the interactive TUI —
++            // which is where the QR code lives — so it is not usable here.
++            enableStandaloneFuseboxShell: !(0, _env.envIsHeadless)() && process.env.EXPO_NO_DEVTOOLS_SHELL !== '1'
+         }
+     });
+     const debuggerWebsocketEndpoint = websocketEndpoints['/inspector/debug'];

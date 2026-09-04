@@ -26,3 +26,12 @@ minimumReleaseAgeExclude:
   - expo-image-manipulator@57.0.16
   - expo-image-picker@57.0.16
   - expo-router@57.0.19
+
+# @expo/cli only lets you switch off the React Native DevTools shell as a side
+# effect of EXPO_UNSTABLE_HEADLESS, which also disables the interactive TUI and
+# therefore the QR code. This one-line patch gives the shell its own opt-out,
+# EXPO_NO_DEVTOOLS_SHELL, which docker-compose.yml sets for the dev container.
+# The version is exact on purpose: an @expo/cli bump makes the install fail
+# loudly here rather than silently dropping the patch.
+patchedDependencies:
+  "@expo/cli@57.0.22": patches/@expo__cli@57.0.22.patch
