@@ -6,7 +6,6 @@
     "scheme": "snapsort",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.snapsort.mobile"

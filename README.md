@@ -46,7 +46,7 @@ graph LR
 | Component      | Technology                                                                              |
 | -------------- | --------------------------------------------------------------------------------------- |
 | Web App        | React 19, Vite, TanStack Router, React Query, TypeScript                                |
-| Mobile App     | Expo SDK 54, Expo Router, React Native 0.81, TypeScript                                 |
+| Mobile App     | Expo SDK 57, Expo Router, React Native 0.86, TypeScript                                 |
 | Web API        | ASP.NET Core Minimal APIs, .NET 10, Scalar API reference                                |
 | Worker         | Azure Functions (isolated worker), .NET 10                                              |
 | Vision Model   | Gemma 3 4B (`ai/gemma3:4B-Q4_K_M`) via Docker Model Runner                              |

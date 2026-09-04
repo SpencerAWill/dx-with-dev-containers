@@ -18,7 +18,7 @@ SnapSort is a polyglot monorepo image classification app. It demonstrates dev co
 ## Tech Stack
 
 - **Web App**: React 19 + Vite + TanStack Router + TypeScript + pnpm
-- **Mobile App**: Expo SDK 54 + Expo Router + React Native 0.81 + TypeScript
+- **Mobile App**: Expo SDK 57 + Expo Router + React Native 0.86 + TypeScript
 - **Web API**: ASP.NET Core Minimal APIs (.NET 10)
 - **Worker**: Azure Functions isolated worker (C#) + vision model (Gemma 3 via Docker Model Runner)
 - **Shared Data**: EF Core with SQL Server provider (`libs/data/`)

@@ -13,3 +13,16 @@ packages:
 allowBuilds:
   esbuild: true
   unrs-resolver: true
+
+# pnpm holds back freshly published versions for a cooldown period. The SDK 57
+# packages below were newer than that when the upgrade ran, so pnpm recorded
+# them here to let the install through. Prune stale entries on the next bump.
+minimumReleaseAgeExclude:
+  - "@expo/cli@57.0.22"
+  - expo-modules-core@57.0.16
+  - expo-modules-jsi@57.0.8
+  - expo@57.0.20
+  - "@expo/ui@57.0.16"
+  - expo-image-manipulator@57.0.16
+  - expo-image-picker@57.0.16
+  - expo-router@57.0.19

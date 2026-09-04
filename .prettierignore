@@ -1,6 +1,8 @@
 # Generated
 apps/web-app/src/routeTree.gen.ts
 apps/mobile/.expo/
+# Written by `expo` itself; SDK 57 emits it without a trailing newline
+apps/mobile/expo-env.d.ts
 **/packages.lock.json
 pnpm-lock.yaml
 
